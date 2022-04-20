@@ -4,17 +4,17 @@ import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters, CallbackContext, MessageHandler
 from telegram.ext import ConversationHandler
-from steps import start_handler, name_handler, cancel_handler, about
+from steps import start, help_command, start_handler, name_handler, cancel_handler, about
 from steps import phone_handler, questionnaire
 from steps import NAME, CALLBACK_BEGIN, CHOOSE, PHONE, QUESTION
 from questionnaire import start_questionnaire, num_of_shops, city, system
 from questionnaire import order_at_desk, bank, loyalty
 from questionnaire import tips, other_tasks, finish
 from questionnaire import other_system, other_bank, other_delivery, other_options
-from questionnaire import NAME_OF_PROJECT, NUM_OF_SHOPS, CITY, SYSTEM, ORDER, BANK, OPTIONS
-from questionnaire import LOYALTY, TIPS, TASKS, DELIVERY
-from del_keyboard import keyboard_conv
-from opt_keyboard import keyboard_conv_opt
+from questionnaire import NAME_OF_PROJECT, NUM_OF_SHOPS, CITY, SYSTEM, ORDER, BANK, OPTIONS, OTHER_DELIVERY
+from questionnaire import LOYALTY, TIPS, TASKS, DELIVERY, OTHER_SYSTEM, OTHER_BANK, OTHER_OPTIONS
+from del_keyboard import start_delivery, press
+from opt_keyboard import start_options, opt_press
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -22,35 +22,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def start(update, _):
-    start_button = "Начать"
-    start_text = 'Добрый день ...\n'\
-    'Здесь Вы можете оставить ....\n'\
-    '\n'\
-    'Для старта, нажмите "Начать" \U0001F447'
-    keyboard = [
-        [
-            InlineKeyboardButton(start_button, callback_data=CALLBACK_BEGIN),
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True)
-    update.message.reply_text(start_text, reply_markup=reply_markup)
-
-
-def help_command(update, _):
-    update.message.reply_text("Используйте `/start` для запуска бота.")
-
-
-def restart(update, _):
-    updater.dispatcher.add_handler(conv_handler)
-
-
 if __name__ == '__main__':
-    updater = Updater("TOKEN")
+    updater = Updater("5198022488:AAHUNXIY2RtbFB4fiTGUeNeoHredWPU-lxM")
 
     conv_handler = ConversationHandler(
         entry_points=[
-            CallbackQueryHandler(start_handler, pass_user_data=True),
             CallbackQueryHandler(start_handler, pattern='^' + 'x1' + '$'),
         ],
         states={
@@ -73,41 +49,79 @@ if __name__ == '__main__':
                 MessageHandler(Filters.all, num_of_shops, pass_user_data=True)
             ],
             NUM_OF_SHOPS: [
-                MessageHandler(Filters.all, city, pass_user_data=True)
+                MessageHandler(Filters.all, city, pass_user_data=True),
+                CallbackQueryHandler(start_questionnaire, pattern='^' + 'back' + '$'),
             ],
             CITY: [
-                MessageHandler(Filters.all, system, pass_user_data=True)
+                MessageHandler(Filters.all, system, pass_user_data=True),
+                CallbackQueryHandler(num_of_shops, pattern='^' + 'back' + '$'),
             ],
             SYSTEM: [
                 CallbackQueryHandler(order_at_desk,
-                    pattern='^' + 'iiko' + '$|^' + 'qr' + '$|^' + 'rk' + '$'),
+                                     pattern='^' + 'iiko' + '$|^' + 'qr' + '$|^' + 'rk' + '$'),
                 CallbackQueryHandler(other_system, pattern='^' + 'other' + '$'),
+                CallbackQueryHandler(city, pattern='^' + 'back' + '$'),
+            ],
+            OTHER_SYSTEM: [
+                CallbackQueryHandler(system, pattern='^' + 'back' + '$'),
                 MessageHandler(Filters.all, order_at_desk, pass_user_data=True),
             ],
             ORDER: [
                 CallbackQueryHandler(bank,
-                    pattern='^' + 'yes' + '$|^' + 'no' + '$'),
+                                     pattern='^' + 'yes' + '$|^' + 'no' + '$'),
                 CallbackQueryHandler(system, pattern='^' + 'back' + '$'),
             ],
             BANK: [
-                keyboard_conv,
+                CallbackQueryHandler(start_delivery,
+                                     pattern='^' + 'sber' + '$|^' + 'tinkoff' + '$|^' + 'cp' + '$|^' + 'ukassa' + '$'),
+                CallbackQueryHandler(other_bank, pattern='^' + 'other' + '$'),
+                CallbackQueryHandler(order_at_desk, pattern='^' + 'back' + '$'),
+                # keyboard_conv,
+            ],
+            OTHER_BANK: [
+                # keyboard_conv,
+                MessageHandler(Filters.all, start_delivery, pass_user_data=True),
+                CallbackQueryHandler(bank, pattern='^' + 'back' + '$'),
+            ],
+            DELIVERY: [
+                CallbackQueryHandler(press,
+                                     pattern='^'+str(1)+'$|^'+str(2)+'$|^'+str(3)+'$|^'+str(4)+'$'),
+                CallbackQueryHandler(other_delivery, pattern='^' + 'other' + '$'),
+                CallbackQueryHandler(bank, pattern='^' + 'back' + '$'),
+                CallbackQueryHandler(start_options, pattern='^'+'next'+'$'),
+            ],
+            OTHER_DELIVERY: [
+                MessageHandler(Filters.all, start_options, pass_user_data=True),
+                CallbackQueryHandler(start_delivery, pattern='^' + 'back' + '$'),
             ],
             OPTIONS: [
-                keyboard_conv_opt,
+                CallbackQueryHandler(opt_press,
+                                     pattern='^'+str(1)+'$|^'+str(2)+'$|^'+str(3)+'$|^'+str(4)+'$|^'+str(5)+'$'),
+                CallbackQueryHandler(other_options, pattern='^' + 'other' + '$'),
+                CallbackQueryHandler(loyalty, pattern='^'+'next'+'$'),
+                CallbackQueryHandler(start_delivery, pattern='^' + 'back' + '$'),
+            ],
+            OTHER_OPTIONS: [
+                MessageHandler(Filters.all, loyalty, pass_user_data=True),
+                CallbackQueryHandler(start_options, pattern='^' + 'back' + '$'),
             ],
             LOYALTY: [
-                 MessageHandler(Filters.all, tips, pass_user_data=True),
+                MessageHandler(Filters.all, tips, pass_user_data=True),
+                CallbackQueryHandler(start_options, pattern='^' + 'back' + '$'),
             ],
             TIPS: [
                 CallbackQueryHandler(other_tasks,
-                    pattern='^' + 'netmonet' + '$|^' + 'cloudtips' + '$|^' + 'no_tips' + '$'),
+                                     pattern='^' + 'netmonet' + '$|^' + 'cloudtips' + '$|^' + 'no_tips' + '$'),
+                CallbackQueryHandler(loyalty, pattern='^' + 'back' + '$'),
             ],
             TASKS: [
                 MessageHandler(Filters.all, finish, pass_user_data=True),
+                CallbackQueryHandler(tips, pattern='^' + 'back' + '$'),
                 CallbackQueryHandler(start_handler, pattern='^' + 'x1' + '$'),
             ],
 
         },
+        allow_reentry=True,
         fallbacks=[
             CommandHandler('start', start),
             CommandHandler('help', help_command),
