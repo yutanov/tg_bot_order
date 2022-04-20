@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
-    updater = Updater("5198022488:AAHUNXIY2RtbFB4fiTGUeNeoHredWPU-lxM")
+    updater = Updater("TOKEN")
 
     conv_handler = ConversationHandler(
         entry_points=[
