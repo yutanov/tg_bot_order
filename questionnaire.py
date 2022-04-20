@@ -236,7 +236,6 @@ def finish(update: Update, context: CallbackContext):
     reply_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton('Главное меню \u27A1', callback_data='x1')],
-            [InlineKeyboardButton('\u2b05 Назад', callback_data='back')],
         ],
     )
     update.message.reply_text(text=text, reply_markup=reply_keyboard)

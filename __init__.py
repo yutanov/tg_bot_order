@@ -115,7 +115,6 @@ if __name__ == '__main__':
             TASKS: [
                 MessageHandler(Filters.all, finish, pass_user_data=True),
                 CallbackQueryHandler(tips, pattern='^' + 'back' + '$'),
-                CallbackQueryHandler(start_handler, pattern='^' + 'x1' + '$'),
             ],
 
         },
