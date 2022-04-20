@@ -76,10 +76,8 @@ if __name__ == '__main__':
                                      pattern='^' + 'sber' + '$|^' + 'tinkoff' + '$|^' + 'cp' + '$|^' + 'ukassa' + '$'),
                 CallbackQueryHandler(other_bank, pattern='^' + 'other' + '$'),
                 CallbackQueryHandler(order_at_desk, pattern='^' + 'back' + '$'),
-                # keyboard_conv,
             ],
             OTHER_BANK: [
-                # keyboard_conv,
                 MessageHandler(Filters.all, start_delivery, pass_user_data=True),
                 CallbackQueryHandler(bank, pattern='^' + 'back' + '$'),
             ],
