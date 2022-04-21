@@ -2,7 +2,7 @@
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, ConversationHandler
-from steps import NAME, PHONE
+from steps import NAME, PHONE, USER_ID
 
 NAME_OF_PROJECT, NUM_OF_SHOPS, CITY = map(chr, range(4, 7))
 SYSTEM, ORDER, BANK, OPTIONS = map(chr, range(7, 11))
@@ -227,6 +227,13 @@ def finish(update: Update, context: CallbackContext):
     with open('questionnaire_db.txt', 'a') as f:
         f.write(text)
 
+    fileID = 'questionnaire_db.txt'
+    context.bot.send_document(
+        chat_id=USER_ID,
+        caption=f"Новая анкета {context.user_data[NAME]} {context.user_data[PHONE]}",
+        document=open(fileID, 'rb'),
+        filename=fileID,
+    )
     text = f"Супер, {context.user_data[NAME]}!\n"\
         "Благодарим за пройденный путь\n"\
         "\n"\

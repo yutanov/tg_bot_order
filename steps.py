@@ -6,6 +6,7 @@ from telegram.ext import CallbackContext, ConversationHandler
 
 CALLBACK_BEGIN = 'x1'
 NAME, CHOOSE, PHONE, QUESTION = range(4)
+USER_ID = "USER_ID"
 
 
 def start(update, _):
@@ -91,6 +92,14 @@ def questionnaire(update: Update, context: CallbackContext):
     if context.user_data[PHONE]:
         with open('file_db.txt', 'a') as f:
             f.write(f"{context.user_data[NAME]} - {context.user_data[PHONE]}\n")
+
+        fileID = 'file_db.txt'
+        context.bot.send_document(
+            chat_id=USER_ID,
+            caption=f"Новый контакт {context.user_data[NAME]} {context.user_data[PHONE]}",
+            document=open(fileID, 'rb'),
+            filename=fileID,
+        )
 
         text = "Благодарим, мы скоро с вами свяжемся! "\
             "\n"\
