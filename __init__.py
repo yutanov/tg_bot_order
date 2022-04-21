@@ -58,7 +58,8 @@ if __name__ == '__main__':
             ],
             SYSTEM: [
                 CallbackQueryHandler(order_at_desk,
-                                     pattern='^' + 'iiko' + '$|^' + 'qr' + '$|^' + 'rk' + '$'),
+                                     pattern='^' + 'iiko' + '$|^' + 'rk' + '$'),
+                CallbackQueryHandler(bank, pattern='^' + 'qr' + '$'),
                 CallbackQueryHandler(other_system, pattern='^' + 'other' + '$'),
                 CallbackQueryHandler(city, pattern='^' + 'back' + '$'),
             ],
@@ -75,7 +76,7 @@ if __name__ == '__main__':
                 CallbackQueryHandler(start_delivery,
                                      pattern='^' + 'sber' + '$|^' + 'tinkoff' + '$|^' + 'cp' + '$|^' + 'ukassa' + '$'),
                 CallbackQueryHandler(other_bank, pattern='^' + 'other' + '$'),
-                CallbackQueryHandler(order_at_desk, pattern='^' + 'back' + '$'),
+                CallbackQueryHandler(system, pattern='^' + 'back' + '$'),
             ],
             OTHER_BANK: [
                 MessageHandler(Filters.all, start_delivery, pass_user_data=True),
